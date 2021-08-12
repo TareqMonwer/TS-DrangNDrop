@@ -2,17 +2,18 @@
 function autobind(
   _target: any,
   _methodName: string,
-  descriptor: PropertyDescriptor) {
+  descriptor: PropertyDescriptor
+) {
   const originalMethod = descriptor.value;
   const adjDescriptor: PropertyDescriptor = {
     configurable: true,
     get() {
       const boundFn = originalMethod.bind(this);
       return boundFn;
-    }
+    },
   };
   return adjDescriptor;
-} 
+}
 
 // Project Input
 class ProjectInput {
@@ -47,12 +48,39 @@ class ProjectInput {
     this.attach();
   }
 
+  private gatherUserInput(): [string, string, number] | void {
+    const title = this.titleInputEl.value;
+    const description = this.descriptionInputEl.value;
+    const people = this.peopleInputEl.valueAsNumber;
+
+    if (
+      title.trim().length === 0 ||
+      description.trim().length === 0 ||
+      people === 0
+    ) {
+      alert("Invalid input, please try again");
+      return;
+    } else {
+      return [title, description, people];
+    }
+  }
+
+  private clearInputs() {
+    this.titleInputEl.value = "";
+    this.descriptionInputEl.value = "";
+    this.peopleInputEl.value = "";
+  }
+
   @autobind
   private submitHandler(event: Event) {
     event.preventDefault();
-    console.log(this.titleInputEl.value);
-    console.log(this.descriptionInputEl.value);
-    console.log(this.peopleInputEl.value);
+    const userInput = this.gatherUserInput();
+
+    if (Array.isArray(userInput)) {
+      const [title, description, people] = userInput;
+      console.log(title, description, people);
+      this.clearInputs();
+    }
   }
 
   private configure() {
